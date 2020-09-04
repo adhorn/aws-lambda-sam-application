@@ -97,7 +97,7 @@ Resources:
       Timeout: 5
       Environment:
         Variables:
-              CurrentVersion: !Ref HelloWorldFunction.Version
+              CurrentVersion: !Ref HelloWorldFunction.Version  # [docs] recommended to pass the lambda version through the Environment Variables
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
