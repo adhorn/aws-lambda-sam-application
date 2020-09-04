@@ -1,4 +1,4 @@
-# sam-app1
+# aws-lambda-traffic-shifting
 
 This project contains Python source code and supporting files for a serverless application that you can deploy with the SAM CLI and that uses CodeDeploy and Lambda traffic shifting for deployment. This is a demo for my immutable infrastructure talk. 
 
