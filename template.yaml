@@ -12,13 +12,57 @@ Globals:
       Variables:
         TABLE_NAME: newdb
 
+Parameters:
+  YourEmail:
+    Type: String
+  Version:
+    Type: String
+    Default: v1
+
 Resources:
-  ServerlessRestApi:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: false
+      UserPoolName: SamCheckingAuthUsers
+      UsernameAttributes:
+      - email
+      AutoVerifiedAttributes:
+      - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: true
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: true
+  UserPoolTokenClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+      - USER_PASSWORD_AUTH
+  UserPoolUser:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      DesiredDeliveryMediums:
+        - EMAIL
+      Username: !Ref YourEmail
+      UserPoolId: !Ref UserPool
+
+  ServerlessAPI:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
       EndpointConfiguration:
         Type: REGIONAL
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt "UserPool.Arn"
   Echo:
     Type: AWS::Serverless::Function 
     Properties:
@@ -26,13 +70,13 @@ Resources:
       Handler: echo.lambda_handler
       Runtime: python3.7
       Events:
-        HelloWorld:
+        Get:
           Type: Api
           Properties:
             Path: /echo
+            RestApiId: !Ref ServerlessAPI
             Method: get
-            RestApiId:
-              Ref: ServerlessRestApi
+
       AutoPublishAlias: live
       DeploymentPreference:
         Type: Canary10Percent5Minutes  
@@ -49,13 +93,15 @@ Resources:
       Handler: get.lambda_handler
       Runtime: python3.7
       Events:
-        HelloWorld:
+        Get:
           Type: Api
           Properties:
             Path: /get/{item_id}
             Method: get
             RestApiId:
-              Ref: ServerlessRestApi
+              Ref: ServerlessAPI
+            Auth:
+              Authorizer: NONE
       AutoPublishAlias: live
       Policies:
         - Version: "2012-10-17"
@@ -82,13 +128,15 @@ Resources:
       Handler: post.lambda_handler
       Runtime: python3.7
       Events:
-        HelloWorld:
+        Post:
           Type: Api
           Properties:
             Path: /create
             Method: post
             RestApiId:
-              Ref: ServerlessRestApi
+              Ref: ServerlessAPI
+            Auth:
+              Authorizer: NONE
       AutoPublishAlias: live
       Policies:
         - Version: "2012-10-17"
@@ -177,12 +225,12 @@ Resources:
               CurrentVersion: !Ref GetItem.Version  # [docs] recommended to pass the lambda version through the Environment Variables
 
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # ServerlessAPI is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   ApplicationAPI:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Value: !Sub "https://${ServerlessAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
   GetItem:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt GetItem.Arn
@@ -195,3 +243,9 @@ Outputs:
   CreateItemIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt CreateItemRole.Arn
+  CognitoID:
+    Description: The Cognito UserPool ID
+    Value: !Ref UserPool
+  CognitoClientID:
+    Description: The Cognito UserPool Client ID
+    Value: !Ref UserPoolTokenClient
