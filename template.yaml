@@ -18,6 +18,13 @@ Parameters:
   Version:
     Type: String
     Default: v1
+  DomainName:
+    Type: String
+    Default: sam.example.com
+  CertificateArn:
+    Type: String
+    Default: arn:aws:acm
+
 
 Resources:
   UserPool:
@@ -52,6 +59,7 @@ Resources:
       Username: !Ref YourEmail
       UserPoolId: !Ref UserPool
 
+
   ServerlessAPI:
     Type: AWS::Serverless::Api
     Properties:
@@ -63,6 +71,24 @@ Resources:
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt "UserPool.Arn"
+
+  APIDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      RegionalCertificateArn: !Ref CertificateArn
+      DomainName: !Ref DomainName
+      EndpointConfiguration:
+        Types: 
+          - REGIONAL
+
+  APIBasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties:
+      DomainName: !Ref APIDomainName
+      RestApiId: !Ref ServerlessAPI
+      Stage: Prod
+
+
   Echo:
     Type: AWS::Serverless::Function 
     Properties:
