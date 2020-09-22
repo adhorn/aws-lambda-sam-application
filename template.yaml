@@ -102,7 +102,8 @@ Resources:
             Path: /echo
             RestApiId: !Ref ServerlessAPI
             Method: get
-
+            Auth:
+              Authorizer: NONE
       AutoPublishAlias: live
       DeploymentPreference:
         Type: Canary10Percent5Minutes  
@@ -126,8 +127,6 @@ Resources:
             Method: get
             RestApiId:
               Ref: ServerlessAPI
-            Auth:
-              Authorizer: NONE
       AutoPublishAlias: live
       Policies:
         - Version: "2012-10-17"
@@ -161,8 +160,6 @@ Resources:
             Method: post
             RestApiId:
               Ref: ServerlessAPI
-            Auth:
-              Authorizer: NONE
       AutoPublishAlias: live
       Policies:
         - Version: "2012-10-17"
