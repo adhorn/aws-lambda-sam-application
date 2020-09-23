@@ -1,8 +1,28 @@
 import json
-
 import pytest
+from collections import namedtuple
 
-from application import echo
+
+@pytest.fixture()
+def env_vars(monkeypatch):
+    monkeypatch.setenv("POWERTOOLS_TRACE_DISABLED", "1")
+
+
+@pytest.fixture()
+def lambda_handler(env_vars):
+    from application import echo
+    return echo.lambda_handler
+
+
+@pytest.fixture
+def lambda_context():
+    lambda_context = {
+        "function_name": "test",
+        "memory_limit_in_mb": 128,
+        "invoked_function_arn": "arn:aws:lambda:eu-west-1:809313241:function:test",
+        "aws_request_id": "52fdfc07-2182-154f-163f-5f0f9a621d72",
+    }
+    return namedtuple("LambdaContext", lambda_context.keys())(*lambda_context.values())
 
 
 @pytest.fixture()
@@ -62,9 +82,9 @@ def apigw_event():
     }
 
 
-def test_lambda_handler(apigw_event, mocker):
+def test_lambda_handler(lambda_handler, apigw_event, mocker, lambda_context):
 
-    ret = echo.lambda_handler(apigw_event, "")
+    ret = lambda_handler(apigw_event, lambda_context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200

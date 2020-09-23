@@ -27,6 +27,9 @@ Globals:
     Environment:
       Variables:
         TABLE_NAME: !Ref TableName
+        POWERTOOLS_LOGGER_LOG_EVENT: "true"        # Logs incoming event, default
+        LOG_LEVEL: INFO 
+
 
 Resources:
   UserPool:
@@ -97,6 +100,7 @@ Resources:
       CodeUri: application/
       Handler: echo.lambda_handler
       Runtime: python3.7
+      Tracing: Active  # enables X-Ray tracing
       Events:
         Get:
           Type: Api
@@ -121,6 +125,7 @@ Resources:
       CodeUri: application/
       Handler: get.lambda_handler
       Runtime: python3.7
+      Tracing: Active  # enables X-Ray tracing
       Events:
         Get:
           Type: Api
@@ -154,6 +159,7 @@ Resources:
       CodeUri: application/
       Handler: post.lambda_handler
       Runtime: python3.7
+      Tracing: Active  # enables X-Ray tracing
       Events:
         Post:
           Type: Api
