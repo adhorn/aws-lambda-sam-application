@@ -59,8 +59,9 @@ One of the parameter, YourEmail, is used to setup a Cognito user with a default 
 ```
 ## IMPORTANT
 
-Notice the example application uses a Custom Domain Name, so you will have to create a record in your DNS provider to point your domain name to the target API Gateway domain name. It looks something like that d-he43n343n2.execute-api.eu-west-1.amazonaws.com and you can get it from the console, logging to API Gateway and looking at the custom domain name created.
-You can of course test everything using the standard API gateway endpoint.
+Notice the example application uses a Custom Domain Name. Thus, you will have to create a record in your DNS provider to point your domain name to the target API Gateway domain name. It looks something like that "d-he43n343n2.execute-api.eu-west-1.amazonaws.com".
+You can get it from the API Gateway console and looking at the custom domain name created.
+However, you can, of course, test everything using the standard API gateway endpoint.
 
 ## Testing the application
 
