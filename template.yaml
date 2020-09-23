@@ -5,13 +5,6 @@ Description: >
 
   Sample SAM Template for sam-app1
 
-Globals:
-  Function:
-    Timeout: 3
-    Environment:
-      Variables:
-        TABLE_NAME: newdb
-
 Parameters:
   YourEmail:
     Type: String
@@ -24,7 +17,16 @@ Parameters:
   CertificateArn:
     Type: String
     Default: arn:aws:acm
+  TableName:
+    Type: String
+    Default: newdb
 
+Globals:
+  Function:
+    Timeout: 3
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref TableName
 
 Resources:
   UserPool:
@@ -135,7 +137,7 @@ Resources:
             Action:
               - "dynamodb:GetItem"
             Resource:
-              !Sub 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/newdb'
+              !Sub 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableName}'
           - Effect: "Allow"
             Action:
               - "logs:CreateLogGroup"
@@ -168,7 +170,7 @@ Resources:
             Action:
               - "dynamodb:PutItem"
             Resource:
-              !Sub 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/newdb'
+              !Sub 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableName}'
           - Effect: "Allow"
             Action:
               - "logs:CreateLogGroup"
@@ -186,9 +188,9 @@ Resources:
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: Resource
-          Value: !Sub "${GetItem}:live"
+          Value: !Sub "${Echo}:live"
         - Name: FunctionName
-          Value: !Ref GetItem
+          Value: !Ref Echo
       EvaluationPeriods: 2
       MetricName: Errors
       Namespace: AWS/Lambda
@@ -203,11 +205,11 @@ Resources:
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: Resource
-          Value: !Sub "${GetItem}:live"
+          Value: !Sub "${Echo}:live"
         - Name: FunctionName
-          Value: !Ref GetItem
+          Value: !Ref Echo
         - Name: ExecutedVersion
-          Value: !GetAtt GetItem.Version.Version
+          Value: !GetAtt Echo.Version.Version
       EvaluationPeriods: 2
       MetricName: Errors
       Namespace: AWS/Lambda
@@ -235,8 +237,8 @@ Resources:
             Action:
               - "lambda:InvokeFunction"
             Resource: 
-             - !GetAtt GetItem.Arn
-             - !Ref GetItem.Version
+             - !GetAtt Echo.Arn
+             - !Ref Echo.Version
       Runtime: python3.7
       FunctionName: 'CodeDeployHook_preTrafficHook'
       DeploymentPreference:
@@ -245,7 +247,7 @@ Resources:
       Timeout: 5
       Environment:
         Variables:
-              CurrentVersion: !Ref GetItem.Version  # [docs] recommended to pass the lambda version through the Environment Variables
+              CurrentVersion: !Ref Echo.Version  # [docs] recommended to pass the lambda version through the Environment Variables
 
 Outputs:
   # ServerlessAPI is an implicit API created out of Events key under Serverless::Function
