@@ -6,12 +6,6 @@ CLIENT_ID=$2
 USERNAME=$3
 PASSWORD=$4
 
-echo $USERPOOLID
-echo $CLIENT_ID
-echo $USERNAME
-echo $PASSWORD
-
-
 # Do an initial login
 # It will come back wtih a challenge response
 AUTH_CHALLENGE_SESSION=`aws cognito-idp initiate-auth \
@@ -22,7 +16,6 @@ AUTH_CHALLENGE_SESSION=`aws cognito-idp initiate-auth \
 --output text`
 
 echo "Then respond to the challenge"
-
 
 # Then respond to the challenge
 AUTH_TOKEN=`aws cognito-idp admin-respond-to-auth-challenge \
@@ -36,6 +29,5 @@ AUTH_TOKEN=`aws cognito-idp admin-respond-to-auth-challenge \
 
 # Tell the world
 echo "Changed the password to Testing1"
-
 echo "Logged in ID Auth Token: "
 echo $AUTH_TOKEN
