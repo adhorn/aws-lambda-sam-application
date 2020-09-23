@@ -9,7 +9,7 @@ def env_vars(monkeypatch):
 
 
 @pytest.fixture()
-def lambda_handler(env_vars):
+def echo_lambda_handler(env_vars):
     from application import echo
     return echo.lambda_handler
 
@@ -82,9 +82,9 @@ def apigw_event():
     }
 
 
-def test_lambda_handler(lambda_handler, apigw_event, mocker, lambda_context):
+def test_lambda_handler(echo_lambda_handler, apigw_event, mocker, lambda_context):
 
-    ret = lambda_handler(apigw_event, lambda_context)
+    ret = echo_lambda_handler(apigw_event, lambda_context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
