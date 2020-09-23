@@ -65,7 +65,7 @@ Demos using [httpie](https://httpie.org/)
 
 Echo API is straight forward:
 ```bash
-> http https://sam.adhorn.me/echo
+> http https://sam.example.com/echo
 
 HTTP/1.1 200 OK
 Connection: keep-alive
@@ -84,7 +84,7 @@ x-amzn-RequestId: 8c9b9553-b59f-4a5c-ac07-17f0812d683d
 
 Get and Post both needs Authorization or you will get and Unauthorized notice.
 ```bash
-> http https://sam.adhorn.me/get/foobar
+> http https://sam.example.com/get/foobar
 
 HTTP/1.1 401 Unauthorized
 Connection: keep-alive
@@ -129,7 +129,7 @@ x-amzn-RequestId: d7976590-4aaa-4425-ad4e-07ed44416529
 }
 ```
 ```bash
-http post https://sam.adhorn.me/create Authorization:<IdToken> item_id=barfoo message=love
+http post https://sam.example.com/create Authorization:<IdToken> item_id=barfoo message=love
 
 HTTP/1.1 200 OK
 Connection: keep-alive
