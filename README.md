@@ -134,7 +134,7 @@ x-amzn-RequestId: d7976590-4aaa-4425-ad4e-07ed44416529
 }
 ```
 ```bash
-http post https://sam.example.com/create Authorization:<IdToken> item_id=barfoo message=love
+> http post https://sam.example.com/create Authorization:<IdToken> item_id=barfoo message=love
 
 HTTP/1.1 200 OK
 Connection: keep-alive
