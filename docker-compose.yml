@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+  dynamo:
+    container_name: sam-dynamodb-local
+    image: amazon/dynamodb-local
+    networks:
+      - backend
+    ports:
+      - '8000:8000'
+    volumes:
+      - dynamodata:/Users/adhorn/projects/dynamodblocal
+    working_dir: /Users/adhorn/projects/dynamodblocal
+
+networks:
+  backend:
+    name: sam-local-backend
+
+volumes:
+  dynamodata: {}

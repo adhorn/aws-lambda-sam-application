@@ -142,7 +142,7 @@ Resources:
         Get:
           Type: Api
           Properties:
-            Path: /get/{item_id}
+            Path: /get/{id}
             Method: get
             RestApiId:
               Ref: ServerlessAPI
