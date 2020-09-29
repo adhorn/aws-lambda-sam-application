@@ -109,11 +109,9 @@ Copy the IdToken part and use it in the Authorization header for Get and Posts A
 > http https://sam.example.com/get/4a695240-5572-4ba8-bb7b-d13106bae674 Authorization:<IdToken>
 
 {
-    "id": {
-        "email": "barfoo@foobar.com",
-        "id": "4a695240-5572-4ba8-bb7b-d13106bae674",
-        "name": "barfoo"
-    },
+    "id": "4a695240-5572-4ba8-bb7b-d13106bae674",
+    "name": "barfoo",
+    "email": "barfoo@foobar.com",
     "retrieved from": "eu-west-1"
 }
 ```
@@ -188,12 +186,10 @@ Test API locally (using [httpie](https://httpie.org/))
 > http http://127.0.0.1:3000/get/4a695240-5572-4ba8-bb7b-d13106bae674
 
 {
-    "id": {
-        "email": "barfoo@foobar.com",
-        "id": "4a695240-5572-4ba8-bb7b-d13106bae674",
-        "name": "barfoo"
-    },
-    "retrieved from": "eu-west-1"
+    "email": "barfoo@foobar.com",
+    "id": "4a695240-5572-4ba8-bb7b-d13106bae674",
+    "name": "barfoo",
+    "retrieved from": "dynamodb-local"
 }
 
 ```
