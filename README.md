@@ -72,15 +72,6 @@ Echo API is straight forward:
 ```bash
 > http https://sam.example.com/echo
 
-HTTP/1.1 200 OK
-Connection: keep-alive
-Content-Length: 29
-Content-Type: application/json
-Date: Wed, 23 Sep 2020 13:41:21 GMT
-X-Amzn-Trace-Id: Root=1-5f6b5080-89eeab7cee63e6f4a98e90d6;Sampled=0
-x-amz-apigw-id: TUmEIG-JjoEF7Tw=
-x-amzn-RequestId: 8c9b9553-b59f-4a5c-ac07-17f0812d683d
-
 {
     "message": "Hello, Worlds!"
 }
@@ -90,15 +81,6 @@ x-amzn-RequestId: 8c9b9553-b59f-4a5c-ac07-17f0812d683d
 Get and Post both needs Authorization or you will get and Unauthorized notice.
 ```bash
 > http https://sam.example.com/get/foobar
-
-HTTP/1.1 401 Unauthorized
-Connection: keep-alive
-Content-Length: 26
-Content-Type: application/json
-Date: Wed, 23 Sep 2020 13:42:58 GMT
-x-amz-apigw-id: TUmTcG8XDoEFn0g=
-x-amzn-ErrorType: UnauthorizedException
-x-amzn-RequestId: 35533f0d-407b-415f-8175-37666e6bf8bf
 
 {
     "message": "Unauthorized"
@@ -113,43 +95,28 @@ We can login using the AWS CLI to retrieve a "IdToken" to our request in order t
 ```
 Copy the IdToken part and use it in the Authorization header for Get and Posts APIs.
 
-```bash
-> http https://sam.example.com/get/foobar Authorization:<IdToken>
 
-HTTP/1.1 200 OK
-Connection: keep-alive
-Content-Length: 93
-Content-Type: application/json
-Date: Wed, 23 Sep 2020 12:30:52 GMT
-X-Amzn-Trace-Id: Root=1-5f6b3ffb-b5dac33ccdf30c7c9cca6b78;Sampled=0
-x-amz-apigw-id: TUbvRHwCDoEFefQ=
-x-amzn-RequestId: d7976590-4aaa-4425-ad4e-07ed44416529
+```bash
+> http post https://sam.example.com/create Authorization:<IdToken> name=barfoo email=barfoo@foobar.com
 
 {
-    "item_id": {
-        "item_id": "foobar",
-        "message": "Hello, World!"
+    "email": "barfoo@foobar.com",
+    "id": "4a695240-5572-4ba8-bb7b-d13106bae674",
+    "name": "barfoo"
+}
+```
+```bash
+> http https://sam.example.com/get/4a695240-5572-4ba8-bb7b-d13106bae674 Authorization:<IdToken>
+
+{
+    "id": {
+        "email": "barfoo@foobar.com",
+        "id": "4a695240-5572-4ba8-bb7b-d13106bae674",
+        "name": "barfoo"
     },
     "retrieved from": "eu-west-1"
 }
 ```
-```bash
-> http post https://sam.example.com/create Authorization:<IdToken> item_id=barfoo message=love
-
-HTTP/1.1 200 OK
-Connection: keep-alive
-Content-Length: 22
-Content-Type: application/json
-Date: Wed, 23 Sep 2020 13:58:11 GMT
-X-Amzn-Trace-Id: Root=1-5f6b5472-4a0236069c997a20d16ce8a2;Sampled=0
-x-amz-apigw-id: TUoh6GEODoEFlBQ=
-x-amzn-RequestId: fb164cd6-958e-4a23-bc0a-ddbbbae4b318
-
-{
-    "item_id": " barfoo"
-}
-```
-
 
 ## Use the SAM CLI to build and test locally
 
@@ -169,12 +136,70 @@ Run functions locally and invoke them with the `sam local invoke` command.
 > sam local invoke Echo --event events/event.json
 ```
 
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
+## Test with DynamoDB local
+
+
+Create a docker network
 
 ```bash
-> sam local start-api
-> curl http://localhost:3000/
+> docker network create sam-demo
 ```
+
+Run DynamoDB Local
+
+
+```bash
+> docker run -d -v "$PWD":/dynamodb_local_db -p 8000:8000 --network sam-demo --name dynamodb cnadiminti/dynamodb-local
+```
+
+Bootstrap DynamoDB Local (create a database and fake data)
+
+
+```bash
+> python bootstrap_dynamodb.py -t "newdb" --hash-key "id"
+```
+
+Let SAM local plays nicely with Docker network
+
+```bash
+> sam local start-api --docker-network sam-demo
+```
+
+
+Test API locally (using [httpie](https://httpie.org/))
+
+```bash
+> http http://127.0.0.1:3000/echo
+
+{
+    "message": "Hello, Worlds!"
+}
+
+
+> http post http://127.0.0.1:3000/create name=barfoo email=barfoo@foobar.com
+
+{
+    "email": "barfoo@foobar.com",
+    "id": "4a695240-5572-4ba8-bb7b-d13106bae674",
+    "name": "barfoo"
+}
+
+
+> http http://127.0.0.1:3000/get/4a695240-5572-4ba8-bb7b-d13106bae674
+
+{
+    "id": {
+        "email": "barfoo@foobar.com",
+        "id": "4a695240-5572-4ba8-bb7b-d13106bae674",
+        "name": "barfoo"
+    },
+    "retrieved from": "eu-west-1"
+}
+
+```
+
+
+
 
 
 
