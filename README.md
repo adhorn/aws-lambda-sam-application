@@ -8,6 +8,7 @@ It tries to follow best practices:
 * Offline and local testing (WIP)
 * Regional Custom domain name.
 * AWS Lambda powertools for python [More Info](https://github.com/awslabs/aws-lambda-powertools-python)
+* AWS DynamoDB local [More Info](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html)
 
 
 ## This project includes the following files and folders.
