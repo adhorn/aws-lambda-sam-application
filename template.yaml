@@ -108,11 +108,11 @@ Resources:
             Path: /echo
             RestApiId: !Ref ServerlessAPI
             Method: get
-            Auth:
-              Authorizer: NONE
+            # Auth:
+            #   Authorizer: NONE
       AutoPublishAlias: live
       DeploymentPreference:
-        Type: Canary10Percent5Minutes  
+        Type: Linear10PercentEvery1Minute  
         Hooks:
           PreTraffic: !Ref PreTrafficHook
         Alarms:
