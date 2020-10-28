@@ -66,22 +66,13 @@ However, you can, of course, test everything using the standard API gateway endp
 
 ## Testing the application
 
-The application supports non-auth API (Echo) and Auth API (Get, Post)
+The application supports non-auth API and Auth API, but by default, all APIs require Auth.
 Demos using [httpie](https://httpie.org/)
 
-Echo API is straight forward:
+
+APIs needs Authorization or you will get and Unauthorized notice.
 ```bash
 > http https://sam.example.com/echo
-
-{
-    "message": "Hello, Worlds!"
-}
-
-```
-
-Get and Post both needs Authorization or you will get and Unauthorized notice.
-```bash
-> http https://sam.example.com/get/foobar
 
 {
     "message": "Unauthorized"
@@ -94,8 +85,17 @@ We can login using the AWS CLI to retrieve a "IdToken" to our request in order t
 > cd script
 > sh login.sh {{UserPool Client ID}} {{Your Email}} "Testing1"
 ```
-Copy the IdToken part and use it in the Authorization header for Get and Posts APIs.
+Copy the IdToken part and use it in the Authorization header.
 
+
+```bash
+> http https://sam.example.com/echo Authorization:<IdToken>
+
+{
+    "message": "Hello, Worlds!"
+}
+
+```
 
 ```bash
 > http post https://sam.example.com/create Authorization:<IdToken> name=barfoo email=barfoo@foobar.com
