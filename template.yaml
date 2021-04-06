@@ -65,7 +65,7 @@ Resources:
       UserPoolId: !Ref UserPool
 
 
-  ServerlessAPI:
+  CustomServerlessAPI:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
@@ -79,6 +79,7 @@ Resources:
 
   APIDomainName:
     Type: AWS::ApiGateway::DomainName
+    DependsOn: CustomServerlessAPI
     Properties:
       RegionalCertificateArn: !Ref CertificateArn
       DomainName: !Ref DomainName
@@ -88,9 +89,10 @@ Resources:
 
   APIBasePathMapping:
     Type: AWS::ApiGateway::BasePathMapping
+    DependsOn: APIDomainName
     Properties:
       DomainName: !Ref APIDomainName
-      RestApiId: !Ref ServerlessAPI
+      RestApiId: !Ref CustomServerlessAPI
       Stage: Prod
 
 
@@ -106,7 +108,7 @@ Resources:
           Type: Api
           Properties:
             Path: /echo
-            RestApiId: !Ref ServerlessAPI
+            RestApiId: !Ref CustomServerlessAPI
             Method: get
             # Auth:
             #   Authorizer: NONE
@@ -145,7 +147,7 @@ Resources:
             Path: /get/{id}
             Method: get
             RestApiId:
-              Ref: ServerlessAPI
+              Ref: CustomServerlessAPI
       AutoPublishAlias: live
       Policies:
         - Version: "2012-10-17"
@@ -179,7 +181,7 @@ Resources:
             Path: /create
             Method: post
             RestApiId:
-              Ref: ServerlessAPI
+              Ref: CustomServerlessAPI
       AutoPublishAlias: live
       Policies:
         - Version: "2012-10-17"
@@ -270,7 +272,7 @@ Resources:
 Outputs:
   ApplicationAPI:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Value: !Sub "https://${CustomServerlessAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/echo"
   GetItem:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt GetItem.Arn
