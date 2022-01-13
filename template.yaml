@@ -89,12 +89,13 @@ Resources:
 
   APIBasePathMapping:
     Type: AWS::ApiGateway::BasePathMapping
-    DependsOn: APIDomainName
+    DependsOn: 
+      - APIDomainName
+      - CustomServerlessAPI
     Properties:
       DomainName: !Ref APIDomainName
       RestApiId: !Ref CustomServerlessAPI
-      Stage: Prod
-
+      Stage: !Ref CustomServerlessAPI.Stage
 
   Echo:
     Type: AWS::Serverless::Function 
@@ -130,6 +131,11 @@ Resources:
               - "logs:PutLogEvents"
               - "xray:PutTraceSegments"
               - "xray:PutTelemetryRecords"
+              - "ssm:GetParameters"
+              - "ssm:DescribeParameters"
+              - "ssm:GetParameter"
+              - "ssm:GetDocument"
+              - "ssm:ListDocuments"
             Resource:
               - "*"
 
@@ -144,7 +150,7 @@ Resources:
         Get:
           Type: Api
           Properties:
-            Path: /get/{id}
+            Path: /item/{id}
             Method: get
             RestApiId:
               Ref: CustomServerlessAPI
@@ -164,6 +170,11 @@ Resources:
               - "logs:PutLogEvents"
               - "xray:PutTraceSegments"
               - "xray:PutTelemetryRecords"
+              - "ssm:GetParameters"
+              - "ssm:DescribeParameters"
+              - "ssm:GetParameter"
+              - "ssm:GetDocument"
+              - "ssm:ListDocuments"
             Resource:
               - "*"
 
@@ -198,6 +209,11 @@ Resources:
               - "logs:PutLogEvents"
               - "xray:PutTraceSegments"
               - "xray:PutTelemetryRecords"
+              - "ssm:GetParameters"
+              - "ssm:DescribeParameters"
+              - "ssm:GetParameter"
+              - "ssm:GetDocument"
+              - "ssm:ListDocuments"
             Resource:
               - "*"
 

@@ -1,2 +1,3 @@
 requests
 aws-lambda-powertools
+chaos-lambda
