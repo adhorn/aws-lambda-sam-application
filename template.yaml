@@ -111,11 +111,11 @@ Resources:
             Path: /echo
             RestApiId: !Ref CustomServerlessAPI
             Method: get
-            # Auth:
-            #   Authorizer: NONE
+            Auth:
+              Authorizer: NONE
       AutoPublishAlias: live
       DeploymentPreference:
-        Type: Linear10PercentEvery1Minute  
+        Type: AllAtOnce  
         Hooks:
           PreTraffic: !Ref PreTrafficHook
         Alarms:
