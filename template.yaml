@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   sam-app1
 
-  Sample SAM Template for sam-app1
+  Sam Template for demo application
 
 Parameters:
   YourEmail:
@@ -20,6 +20,9 @@ Parameters:
   TableName:
     Type: String
     Default: newdb
+  ChaosConfig:
+    Type: String
+    Default: chaoslambda.config
 
 Globals:
   Function:
@@ -27,9 +30,9 @@ Globals:
     Environment:
       Variables:
         TABLE_NAME: !Ref TableName
-        POWERTOOLS_LOGGER_LOG_EVENT: "true"        # Logs incoming event, default
-        LOG_LEVEL: INFO 
-
+        POWERTOOLS_LOGGER_LOG_EVENT: "true"
+        LOG_LEVEL: INFO
+        CHAOS_PARAM: !Ref ChaosConfig
 
 Resources:
   UserPool:
